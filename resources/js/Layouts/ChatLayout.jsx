@@ -1,5 +1,5 @@
 import { usePage } from "@inertiajs/react";
-import React from "react";
+import React, { useEffect } from "react";
 
 const ChatLayout = ({ children }) => {
     const page = usePage();
@@ -8,6 +8,21 @@ const ChatLayout = ({ children }) => {
 
     console.log("Conversation:", conversations);
     console.log("Selected Conversation:", selectedConversation);
+
+    useEffect(() => {
+        Echo.join("online")
+            .here((users) => {
+                console.log("Users:", users);
+            })
+            .joining((user) => {
+                console.log("Joining:", user);
+            })
+            .leaving((user) => {
+                console.log("Leaving:", user);
+            }).error((error) => {
+                console.error("Error:", error);
+            });
+    }, []);
 
     return (
         <>

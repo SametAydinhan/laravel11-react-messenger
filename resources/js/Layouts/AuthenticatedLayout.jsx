@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
@@ -11,9 +11,7 @@ export default function Authenticated({ header, children }) {
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
-    useEffect(() => {
-        console.log('Authenticated Layout mounted.');
-    }, []);
+
 
 
     return (
