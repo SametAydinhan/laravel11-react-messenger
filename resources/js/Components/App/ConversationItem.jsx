@@ -25,7 +25,7 @@ const ConversationItem = ({
         } else if (diffDays === 1) {
             return "Dün"
         } else {
-            return `${diffDays} gün önce`;
+            return `${diffDays} days ago`;
         }
     }
 

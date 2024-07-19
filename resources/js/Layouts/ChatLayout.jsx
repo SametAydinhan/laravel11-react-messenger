@@ -97,7 +97,7 @@ const ChatLayout = ({ children }) => {
                         selectedConversation ? "-ml-[100%] sm:ml-0" : ""
                     }`}
                 >
-                    <div className="flex items-center justify-between py-2 px-3 text-xl font-medium">
+                    <div className="flex items-center justify-between py-2 px-3 text-xl font-medium text-gray-200">
                         My Conversations
                         <div className="tooltip tooltip-left" data-tip="Create new Group">
                             <button className="text-gray-400 hover:text-gray-200">
