@@ -6,13 +6,13 @@ import ConversationHeader from "@/Components/App/ConversationHeader";
 import MessageItem from "@/Components/App/MessageItem";
 function Home({ selectedConversation = null, messages = null }) {
     const [localMessages, setLocalMessages] = useState([]);
-    const messagesCtrRef = useRef();
+    const messagesCtrRef = useRef(null);
     useEffect(() => {
         setLocalMessages(messages ? messages.data.reverse() : []);
     }, [messages]);
     return (
         <>
-            {!messages ?? (
+            {!messages && (
                 <div className="flex flex-col gap-8 justify-center items-center text-center h-full opacity-35">
                     <div className="text-2xl md:text-4xl text-slate-200">
                         Please select conversation to see messages
