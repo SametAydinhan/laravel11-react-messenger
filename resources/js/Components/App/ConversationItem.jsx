@@ -23,9 +23,15 @@ const ConversationItem = ({
                 minute: "2-digit",
             });
         } else if (diffDays === 1) {
-            return "Dün"
-        } else {
+            return "Yesterday";
+        } else if(diffDays < 7){
             return `${diffDays} days ago`;
+        } else if(diffDays < 30){
+            return `${Math.floor(diffDays / 7)} weeks ago`;
+        } else if(diffDays < 365){
+            return `${Math.floor(diffDays / 30)} months ago`;
+        } else {
+            return `${Math.floor(diffDays / 365)} years ago`;
         }
     }
 
