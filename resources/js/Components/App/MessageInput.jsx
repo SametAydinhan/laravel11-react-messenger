@@ -15,6 +15,9 @@ const MessageInput = ({ conversation = null }) => {
     const [messageSending, setMessageSending] = useState(false);
 
     const onSend = () => {
+        if (messageSending) {
+            return;
+        }
         if (newMessage.trim() === "") {
             setInputErrorMessage("Please type a message or attach a file");
             setTimeout(() => {
@@ -73,7 +76,7 @@ const MessageInput = ({ conversation = null }) => {
                         onSend={onSend}
                         onChange={(ev) => setNewMessage(ev.target.value)}
                     />
-                    <button onClick={onSend} className="btn btn-info rounded-l-none">
+                    <button onClick={onSend} disabled={messageSending} className="btn btn-info rounded-l-none">
                         {messageSending && (
                             <span className="loading loading-spinner loading-xs"></span>
                         )}
