@@ -2,15 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
-#app{
+#app {
     height: 100vh;
 }
 
-.conversation-item .avatar.online:before ,
+.conversation-item .avatar.online:before,
 .conversation-item .avatar.offline:before {
     width: 8px;
     height: 8px;
     top: 1%;
     right: 1%;
     outline-width: 1px;
+}
+
+.chat-message-content>blockquote,
+.chat-message-content>dl,
+.chat-message-content>dd,
+.chat-message-content>h1,
+.chat-message-content>h2,
+.chat-message-content>h3,
+.chat-message-content>h4,
+.chat-message-content>h5,
+.chat-message-content>h6,
+.chat-message-content>hr,
+.chat-message-content>figure,
+.chat-message-content>p,
+.chat-message-content>pre {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.chat-message-content > ol,
+.chat-message-content > ul {
+    list-style: revert;
+    margin: revert;
+    padding: revert;
+}
+
+.chat-message-content > table {
+    border-collapse: revert;
+}
+.chat-message-content>h1,
+.chat-message-content>h2,
+.chat-message-content>h3,
+.chat-message-content>h4,
+.chat-message-content>h5,
+.chat-message-content>h6{
+    font-size: revert;
+    font-weight: revert;
+}
+
+.chat-message-content a {
+    text-decoration: underline;
+    color: rgb(246, 246, 246);
+}
+
+.chat-message-content > :first-child {
+    margin-top: 0;
+}
+
+.chat-message-content > :last-child {
+    margin-bottom: 0;
+}
+
+.chat-message-content > blockquote {
+    border-left: 5px solid #ccc;
+    font-style: italic;
+    margin-left: 0;
+    margin-right: 0;
+    overflow: hidden;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
 }
