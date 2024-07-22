@@ -1,5 +1,6 @@
 import ConversationItem from "@/Components/App/ConversationItem";
 import TextInput from "@/Components/TextInput";
+import { useEventBus } from "@/EventBus";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { usePage } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
@@ -11,9 +12,9 @@ const ChatLayout = ({ children }) => {
     const [onlineUsers, setOnlineUsers] = useState({});
     const [localConversations, setLocalConversations] = useState([]);
     const [sortedConversations, setSortedConversations] = useState([]);
+    const { on } = useEventBus();
 
     const isUserOnline = (userId) => onlineUsers[userId];
-    
 
     const onSearch = (ev) => {
         const search = ev.target.value.toLowerCase();
@@ -22,7 +23,39 @@ const ChatLayout = ({ children }) => {
                 return conversation.name.toLowerCase().includes(search);
             })
         );
-    }
+    };
+    const messageCreated = (message) => {
+        setLocalConversations((oldUsers) => {
+            return oldUsers.map((u) => {
+                if (
+                    message.receiver_id &&
+                    !u.is_group &&
+                    (u.id == message.sender_id || u.id == message.receiver_id)
+                ) {
+                    u.last_message = message.message;
+                    u.last_message_date = message.created_at;
+                    return u;
+                }
+                if (
+                    message.group_id &&
+                    u.is_group &&
+                    u.id == message.group_id
+                ) {
+                    u.last_message = message.message;
+                    u.last_message_date = message.created_at;
+                    return u;
+                }
+                return u;
+            });
+        });
+    };
+
+    useEffect(() => {
+        const offCreated = on("message.created", messageCreated);
+        return () => {
+            offCreated();
+        }
+    }, [on]);
 
     useEffect(() => {
         setSortedConversations(
@@ -97,14 +130,17 @@ const ChatLayout = ({ children }) => {
                 >
                     <div className="flex items-center justify-between py-2 px-3 text-xl font-medium text-gray-200">
                         My Conversations
-                        <div className="tooltip tooltip-left" data-tip="Create new Group">
+                        <div
+                            className="tooltip tooltip-left"
+                            data-tip="Create new Group"
+                        >
                             <button className="text-gray-400 hover:text-gray-200">
                                 <PencilSquareIcon className="h-4 w-4 inline-block ml-2" />
                             </button>
                         </div>
                     </div>
                     <div className="p-3">
-                        <TextInput 
+                        <TextInput
                             onKeyUp={onSearch}
                             placeholder="Filter users and groups"
                             className="w-full"
@@ -113,14 +149,17 @@ const ChatLayout = ({ children }) => {
                     <div className="flex-1 overflow-auto">
                         {sortedConversations &&
                             sortedConversations.map((conversation) => (
-                                <ConversationItem 
-                                    key={`${conversation.is_group ? "group_" : "user_"}${conversation.id}`}
+                                <ConversationItem
+                                    key={`${
+                                        conversation.is_group
+                                            ? "group_"
+                                            : "user_"
+                                    }${conversation.id}`}
                                     conversation={conversation}
-                                    online = {!!isUserOnline(conversation.id)}
-                                    selectedConversation = {selectedConversation}
+                                    online={!!isUserOnline(conversation.id)}
+                                    selectedConversation={selectedConversation}
                                 />
-                            ))
-                        }
+                            ))}
                     </div>
                 </div>
                 <div className="flex-1 flex flex-col overflow-hidden">
