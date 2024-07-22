@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import {
     PaperClipIcon,
     PhotoIcon,
@@ -8,6 +8,13 @@ import {
 } from "@heroicons/react/24/solid";
 import NewMessageInput from "./NewMessageInput";
 import axios from "axios";
+import EmojiPicker from "emoji-picker-react";
+import {
+    Popover,
+    PopoverButton,
+    PopoverPanel,
+    Transition,
+} from "@headlessui/react";
 
 const MessageInput = ({ conversation = null }) => {
     const [newMessage, setNewMessage] = useState("");
@@ -27,25 +34,44 @@ const MessageInput = ({ conversation = null }) => {
         }
         const formData = new FormData();
         formData.append("message", newMessage);
-        if(conversation.is_user){
+        if (conversation.is_user) {
             formData.append("receiver_id", conversation.id);
-        } else if(conversation.is_group){
+        } else if (conversation.is_group) {
             formData.append("group_id", conversation.id);
         }
         setMessageSending(true);
-        axios.post(route("message.store"), formData, {
-            onUploadProgress: (progressEvent) => {
-                const progress = Math.round(
-                    (progressEvent.loaded / progressEvent.total) * 100
-                );
-                console.log(progress);
-            }
-        }).then((response) => {
-            setNewMessage("");
-            setMessageSending(false);
-        }).catch((error) => {
-            setMessageSending(false);
-        });
+        axios
+            .post(route("message.store"), formData, {
+                onUploadProgress: (progressEvent) => {
+                    const progress = Math.round(
+                        (progressEvent.loaded / progressEvent.total) * 100
+                    );
+                    console.log(progress);
+                },
+            })
+            .then((response) => {
+                setNewMessage("");
+                setMessageSending(false);
+            })
+            .catch((error) => {
+                setMessageSending(false);
+            });
+    };
+
+    const onLikeClick = () => {
+        if(messageSending){
+            return;
+        }
+        const data ={
+            message: "👍",
+        }
+        if (conversation.is_user) {
+            data["receiver_id"] = conversation.id;
+        } else if (conversation.is_group) {
+            data["group_id"] = conversation.id;
+        }
+        axios
+            .post(route("message.store"), data)
     }
 
     return (
@@ -76,7 +102,11 @@ const MessageInput = ({ conversation = null }) => {
                         onSend={onSend}
                         onChange={(ev) => setNewMessage(ev.target.value)}
                     />
-                    <button onClick={onSend} disabled={messageSending} className="btn btn-info rounded-l-none">
+                    <button
+                        onClick={onSend}
+                        disabled={messageSending}
+                        className="btn btn-info rounded-l-none"
+                    >
                         {messageSending && (
                             <span className="loading loading-spinner loading-xs"></span>
                         )}
@@ -89,10 +119,20 @@ const MessageInput = ({ conversation = null }) => {
                 )}
             </div>
             <div className="order-3 xs:order-3 p-2 flex">
-                <button className="p-1 text-gray-400 hover:text-gray-300">
-                    <FaceSmileIcon className="w-6 h-6" />
-                </button>
-                <button className="p-1 text-gray-400 hover:text-gray-300">
+                <Popover className="relative">
+                    <PopoverButton className="p-1 text-gray-400 hover:text-gray-300">
+                        <FaceSmileIcon className="w-6 h-6" />
+                    </PopoverButton>
+                    <PopoverPanel transition className="absolute z-10 right-0 bottom-full" >
+                        <EmojiPicker
+                            theme="dark"
+                            onEmojiClick={(ev) =>
+                                setNewMessage(newMessage + ev.emoji)
+                            }
+                        ></EmojiPicker>
+                    </PopoverPanel>
+                </Popover>
+                <button onClick={onLikeClick} className="p-1 text-gray-400 hover:text-gray-300">
                     <HandThumbUpIcon className="w-6 h-6" />
                 </button>
             </div>
