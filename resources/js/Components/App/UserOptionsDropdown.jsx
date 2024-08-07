@@ -14,7 +14,6 @@ export default function UserOptionsDropdown({ conversation }) {
         if(!conversation.is_user){
             return;
         }
-
         axios
             .post(route("user.changeRole", conversation.id))
             .then((response) => {
@@ -23,7 +22,6 @@ export default function UserOptionsDropdown({ conversation }) {
             .catch((error) => {
                 console.log(error);
             });
-
     };
     const onBlockUser = () => {
         console.log("Block User");
