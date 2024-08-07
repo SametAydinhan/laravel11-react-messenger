@@ -7,6 +7,7 @@ import MessageItem from "@/Components/App/MessageItem";
 import MessageInput from "@/Components/App/MessageInput";
 import { useEventBus } from "@/EventBus";
 import axios from "axios";
+import AttachmentPreviewModal from "@/Components/App/AttachmentPreviewModal";
 
 function Home({ selectedConversation = null, messages = null }) {
     const [localMessages, setLocalMessages] = useState([]);
@@ -14,6 +15,8 @@ function Home({ selectedConversation = null, messages = null }) {
     const [scrollFromBottom, setScrollFromBottom] = useState(0);
     const messagesCtrRef = useRef(null);
     const loadMoreIntersect = useRef(null);
+    const [showAttachmentPreview, setShowAttachmentPreview] = useState(false);
+    const [previewAttachment, setPreviewAttachment] = useState({});
     const { on } = useEventBus();
     const messageCreated = (message) => {
         if (
@@ -60,6 +63,14 @@ function Home({ selectedConversation = null, messages = null }) {
             });
     }, [localMessages, noMoreMessages]);
 
+    const onAttachmentClick = (attachments, ind) => {
+        setPreviewAttachment({
+            attachments,
+            ind,
+        });
+        setShowAttachmentPreview(true);
+    };
+
     useEffect(() => {
         setTimeout(() => {
             if (messagesCtrRef.current) {
@@ -68,9 +79,9 @@ function Home({ selectedConversation = null, messages = null }) {
             }
         }, 10);
         const offCreated = on("message.created", messageCreated);
-        
+
         setScrollFromBottom(0);
-        setNoMoreMessages(false)
+        setNoMoreMessages(false);
         return () => {
             offCreated();
         };
@@ -140,6 +151,7 @@ function Home({ selectedConversation = null, messages = null }) {
                                     <MessageItem
                                         key={message.id}
                                         message={message}
+                                        attachmentClick={onAttachmentClick}
                                     />
                                 ))}
                             </div>
@@ -147,6 +159,15 @@ function Home({ selectedConversation = null, messages = null }) {
                     </div>
                     <MessageInput conversation={selectedConversation} />
                 </>
+            )}
+
+            {previewAttachment.attachments && (
+                <AttachmentPreviewModal
+                    attachments={previewAttachment.attachments}
+                    index={previewAttachment.ind}
+                    show={showAttachmentPreview}
+                    onClose={() => setShowAttachmentPreview(false)}
+                />
             )}
         </>
     );
