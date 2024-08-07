@@ -12,6 +12,7 @@ use App\Models\MessageAttachment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class MessageController extends Controller
 {
@@ -78,7 +79,7 @@ class MessageController extends Controller
         $files = $data['attachments'] ?? [];
         $message = Message::create($data);
 
-        $atachments = [];
+        $attachments = [];
         if($files){
             foreach($files as $file){
                 $directory = 'attachments/' . Str::random(32);
@@ -92,9 +93,9 @@ class MessageController extends Controller
                     'path' => $file->store($directory, 'public'),
                 ];
                 $attachment = MessageAttachment::create($model);
-                $atachments[] = $attachment;
+                $attachments[] = $attachment;
             }
-            $message->attachments = $atachments;
+            $message->attachments = $attachments;
         }
         if($receiverId){
             Conversation::updateConversationWithMessage($receiverId, auth()->id(), $message);
