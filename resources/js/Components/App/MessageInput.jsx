@@ -16,6 +16,9 @@ import {
     PopoverPanel,
     Transition,
 } from "@headlessui/react";
+import { isAudio, isImage,  } from "@/helper";
+import AttachmentPreview from "./AttachmentPreview";
+import CustomAudioPlayer from "./CustomAudioPlayer";
 
 const MessageInput = ({ conversation = null }) => {
     const [newMessage, setNewMessage] = useState("");
@@ -25,6 +28,7 @@ const MessageInput = ({ conversation = null }) => {
     const [uploadProgress, setUploadProgress] = useState(0);
 
     const onFileChange = (ev) => {
+        
         const files = ev.target.files;
         const updatedFiles = [...files].map((file) => {
             return {
@@ -32,8 +36,9 @@ const MessageInput = ({ conversation = null }) => {
                 url: URL.createObjectURL(file),
             };
         });
+        
 
-        setChosenFiles((prevFiles) => {
+        setChosenFiles((prevFiles) => {            
             return [...prevFiles, ...updatedFiles];
         });
     };
@@ -42,7 +47,7 @@ const MessageInput = ({ conversation = null }) => {
         if (messageSending) {
             return;
         }
-        if (newMessage.trim() === "") {
+        if (newMessage.trim() === "" && chosenFiles.length === 0) {
             setInputErrorMessage("Please type a message or attach a file");
             setTimeout(() => {
                 setInputErrorMessage("");
@@ -51,7 +56,7 @@ const MessageInput = ({ conversation = null }) => {
         }
         const formData = new FormData();
         chosenFiles.forEach((file) => {
-            formData.append("attachments[]", file.file);
+            formData.append("attachments[]", file.file);  
         });
         formData.append("message", newMessage);
         if (conversation.is_user) {
@@ -187,7 +192,7 @@ const MessageInput = ({ conversation = null }) => {
                                         )
                                     );
                                 }}
-                                className="absolute w-6 h- rounded-full bg-gray-800 -right-2 -top-2 text-gray-300 hover:text-gray-100 z-10"
+                                className="absolute w-6 h-6 rounded-full bg-gray-800 -right-2 -top-2 text-gray-300 hover:text-gray-100 z-10"
                             >
                                 <XCircleIcon className="w-6" />
                             </button>
